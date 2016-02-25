@@ -20,3 +20,12 @@
   (let [before-n (subvec v 0 n)
         after-n (subvec v n (count v))]
     (vec (concat before-n [val] after-n))))
+
+#?(:cljs
+   (defn to-array
+     "convert a js collection into a ISeq. Credit to http://www.dotkam.com/2012/11/23/convert-html5-filelist-to-clojure-vector/"
+     [js-col]
+     (-> (clj->js [])
+         (.-slice)
+         (.call js-col)
+         (js->clj))))
