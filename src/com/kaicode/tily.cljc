@@ -28,4 +28,17 @@
      (-> (clj->js [])
          (.-slice)
          (.call js-col)
-         (js->clj))))
+         (js->clj)))
+
+   
+   )
+
+
+#?(:cljs
+   (defn debug
+     "println to javascript console. using boot.cljs causes println to send output to the repl and not to the js console"
+     [& edn]
+     (let [output (str edn)
+           output-unwrapped (subs output 1 (-> output count dec))]
+       (js/console.log output-unwrapped)))
+   )
