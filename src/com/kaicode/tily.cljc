@@ -1,4 +1,7 @@
-(ns com.kaicode.tily)
+(ns com.kaicode.tily
+  (:require [clojure.string :as s]
+            [cljs.core.async :refer [<! put! chan]]
+            [clojure.string :as s]))
 
 (defn with-index
   "return the sequence with an index for every element.
@@ -28,10 +31,7 @@
      (-> (clj->js [])
          (.-slice)
          (.call js-col)
-         (js->clj)))
-
-   
-   )
+         (js->clj))))
 
 
 #?(:cljs
@@ -40,5 +40,57 @@
      [& edn]
      (let [output (str edn)
            output-unwrapped (subs output 1 (-> output count dec))]
-       (js/console.log output-unwrapped)))
-   )
+       (js/console.log output-unwrapped))))
+
+#?(:cljs
+   (defn str->array-buffer [a-str]
+     (. (js/TextEncoder. "utf-8") encode a-str)))
+
+#?(:cljs
+   (defn array-buffer->hex-str [array-buffer]
+         (let [view (js/DataView. array-buffer)
+           length (.. view -byteLength)
+           hex-code (clj->js (for [i (range 0 length 4)
+                                   :let [value (. view getUint32 i)
+                                         string-value (. value toString 16)
+                                         padding "00000000"
+                                         padding-value (. (str padding string-value)
+                                                          slice (* -1 (. padding -length)))]]
+                               padding-value))]
+       hex-code)))
+
+#?(:cljs
+   (defn file->text-channel [file]
+     (let [c (chan 1)
+           file-reader (js/FileReader.)]
+       (aset file-reader "onload" (fn [evt]
+                                    (let [text (.. evt -target -result)]
+                                      (put! c text)
+                                      )))
+       (. file-reader (readAsText file))
+       c)))
+
+
+#?(:cljs
+   (defn file->array-buffer-channel [file]
+         (let [c (chan 1)
+           file-reader (js/FileReader.)]
+       (aset file-reader "onload" (fn [evt]
+                                    (let [binary (.. evt -target -result)]
+                                      (put! c binary)
+                                      )))
+       (. file-reader (readAsArrayBuffer file))
+       c)))
+
+#?(:cljs
+   (defn hash
+     "algorithm can any supported at https://www.chromium.org/blink/webcrypto. for example :SHA-256
+  binary is an ArrayBuffer"
+     [algorithm-kw binary]
+     (let [algorithm-str (-> algorithm-kw name s/upper-case)
+           c (chan 1)]
+       (.. (js/crypto.subtle.digest #js{:name algorithm-str} binary)
+           (then (fn [the-hash]
+                   (let [hash-str (s/join "" (array-buffer->hex-str the-hash))]
+                     (put! c hash-str)))))
+       c)))
