@@ -76,20 +76,19 @@
          (let [c (chan 1)
            file-reader (js/FileReader.)]
        (aset file-reader "onload" (fn [evt]
-                                    (let [binary (.. evt -target -result)]
-                                      (put! c binary)
+                                    (let [array-buffer (.. evt -target -result)]
+                                      (put! c array-buffer)
                                       )))
        (. file-reader (readAsArrayBuffer file))
        c)))
 
 #?(:cljs
    (defn hash
-     "algorithm can any supported at https://www.chromium.org/blink/webcrypto. for example :SHA-256
-  binary is an ArrayBuffer"
-     [algorithm-kw binary]
+     "algorithm is a keyword of the algorithms supported at https://www.chromium.org/blink/webcrypto. for example :SHA-256"
+     [algorithm-kw array-buffer]
      (let [algorithm-str (-> algorithm-kw name s/upper-case)
            c (chan 1)]
-       (.. (js/crypto.subtle.digest #js{:name algorithm-str} binary)
+       (.. (js/crypto.subtle.digest #js{:name algorithm-str} array-buffer)
            (then (fn [the-hash]
                    (let [hash-str (s/join "" (array-buffer->hex-str the-hash))]
                      (put! c hash-str)))))
