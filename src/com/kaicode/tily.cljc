@@ -25,7 +25,7 @@
     (vec (concat before-n [val] after-n))))
 
 #?(:cljs
-   (defn to-array
+   (defn to-seq
      "convert a js collection into a ISeq. Credit to http://www.dotkam.com/2012/11/23/convert-html5-filelist-to-clojure-vector/"
      [js-col]
      (-> (clj->js [])
@@ -83,7 +83,7 @@
        c)))
 
 #?(:cljs
-   (defn hash
+   (defn hash-me
      "algorithm is a keyword of the algorithms supported at https://www.chromium.org/blink/webcrypto. for example :SHA-256"
      [algorithm-kw array-buffer]
      (let [algorithm-str (-> algorithm-kw name s/upper-case)
