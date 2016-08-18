@@ -7,8 +7,11 @@
   "return the sequence with an index for every element.
   For example: (with-index [:a :b :c]) returns ([0 :a] [1 :b] [2 :c]).
 
-  The use case for this method ariises with you need access to the index of element of a sequence
-  in a for or a doseq"
+  The use case for this method arises when you need access to the index of element of a sequence
+  For example:
+
+  (doseq [[index element] (with-index [:a :b :c :d])]
+    (println index element)"
   [a-seq]
   (map-indexed (fn [i element] [i element])
                a-seq))
@@ -84,7 +87,8 @@
 
 #?(:cljs
    (defn hash-me
-     "algorithm is a keyword of the algorithms supported at https://www.chromium.org/blink/webcrypto. for example :SHA-256"
+     "hash array-buffer using the given algorithm. algorithm-kw is a keyword of the algorithms supported at 
+     https://www.chromium.org/blink/webcrypto. for example :SHA-256"
      [algorithm-kw array-buffer]
      (let [algorithm-str (-> algorithm-kw name s/upper-case)
            c (chan 1)]
