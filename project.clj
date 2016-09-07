@@ -1,2 +1,2 @@
-(defproject  com.kaicode/tily "0.1.5-SNAPSHOT"
+(defproject  com.kaicode/tily "0.1.6-SNAPSHOT"
   :source-paths ["src"])

@@ -123,4 +123,7 @@
 (defn normalize-str [a-str]
   (-> a-str (or "")
       clojure.string/trim
-            clojure.string/lower-case))
+      clojure.string/lower-case))
+
+(defn set-atom! [an-atom path val]
+  (swap! an-atom update-in path (constantly val)))
