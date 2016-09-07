@@ -1,7 +1,11 @@
 (ns com.kaicode.tily
   (:require [clojure.string :as s]
             [cljs.core.async :refer [<! put! chan]]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [clojure.walk :as w]
+            #?(:cljs [goog.string :as gstring])
+            #?(:cljs [goog.string.format])
+            #?(:cljs [cljsjs.moment])))
 
 (defn with-index
   "return the sequence with an index for every element.
@@ -51,7 +55,7 @@
 
 #?(:cljs
    (defn array-buffer->hex-str [array-buffer]
-         (let [view (js/DataView. array-buffer)
+     (let [view (js/DataView. array-buffer)
            length (.. view -byteLength)
            hex-code (clj->js (for [i (range 0 length 4)
                                    :let [value (. view getUint32 i)
@@ -76,7 +80,7 @@
 
 #?(:cljs
    (defn file->array-buffer-channel [file]
-         (let [c (chan 1)
+     (let [c (chan 1)
            file-reader (js/FileReader.)]
        (aset file-reader "onload" (fn [evt]
                                     (let [array-buffer (.. evt -target -result)]
@@ -97,3 +101,26 @@
                    (let [hash-str (s/join "" (array-buffer->hex-str the-hash))]
                      (put! c hash-str)))))
        c)))
+
+(defn format [& args]
+  #?(:cljs (apply gstring/format args)))
+
+(defn is-contained? [a _ b]
+  (not (nil? (some #(= a %)  b))))
+
+(defn remove-nils
+  [m]
+  (let [f (fn [[k v]] (when v [k v]))]
+    (w/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+
+(defn str->date [date-as-str]
+  #?(:cljs (let [m (-> date-as-str (js/moment. "MM/DD/YYYY"))]
+             (. m toDate))))
+
+(defn date->str [date]
+  #?(:cljs (.. (js/moment. date) (format "MM/DD/YYYY"))))
+
+(defn normalize-str [a-str]
+  (-> a-str (or "")
+      clojure.string/trim
+            clojure.string/lower-case))
