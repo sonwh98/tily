@@ -1,6 +1,6 @@
 (ns com.kaicode.tily
   (:require [clojure.string :as s]
-            [cljs.core.async :refer [<! put! chan]]
+            #?(:cljs [cljs.core.async :refer [<! put! chan]])
             [clojure.string :as s]
             [clojure.walk :as w]
             #?(:cljs [goog.string :as gstring])
@@ -105,7 +105,9 @@
 (defn format [& args]
   #?(:cljs (apply gstring/format args)))
 
-(defn is-contained? [a _ b]
+(defn is-contained?
+  "Example: (is-contained? 1 :in [1 2 3])"
+  [a _ b]
   (not (nil? (some #(= a %)  b))))
 
 (defn remove-nils
