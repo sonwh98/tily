@@ -102,8 +102,10 @@
                      (put! c hash-str)))))
        c)))
 
-(defn format [& args]
-  #?(:cljs (apply gstring/format args)))
+
+#?(:cljs 
+   (defn format [& args]
+     (apply gstring/format args)))
 
 (defn is-contained?
   "Example: (is-contained? 1 :in [1 2 3])"
