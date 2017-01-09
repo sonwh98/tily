@@ -3,9 +3,12 @@
             #?(:cljs [cljs.core.async :refer [<! put! chan]])
             [clojure.string :as s]
             [clojure.walk :as w]
+            [clojure.set]
             #?(:cljs [goog.string :as gstring])
             #?(:cljs [goog.string.format])
             #?(:cljs [cljsjs.moment])))
+
+;;miscellaneous utility functions
 
 (defn with-index
   "return the sequence with an index for every element.
@@ -111,6 +114,12 @@
   "Example: (is-contained? 1 :in [1 2 3])"
   [a _ b]
   (not (nil? (some #(= a %)  b))))
+
+(defn some-in?
+  "returns true if there some element in a also exists in b"
+  [a b]
+  (-> a (clojure.set/intersection b)
+      empty? not))
 
 (defn remove-nils
   [m]
