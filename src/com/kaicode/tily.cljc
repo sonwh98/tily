@@ -140,3 +140,12 @@
 
 (defn set-atom! [an-atom path val]
   (swap! an-atom update-in path (constantly val)))
+
+#?(:cljs
+   (defn get-dimensions
+     ([]
+      {:width (. js/window -innerWidth)
+       :height  (. js/window -innerHeight)})
+     ([element]
+      {:width (. element -offsetWidth)
+       :height (. element -offsetHeight)})))
