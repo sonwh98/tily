@@ -119,9 +119,19 @@
 (defn some-in?
   "returns true if there some element in a also exists in b"
   [a b]
-  (-> a (clojure.set/intersection b)
-      empty? not))
+  (let [a (if (coll? a)
+            (set a)
+            (hash-set a))
+        b (if (coll? b)
+            (set b)
+            (hash-set b))]
+    (-> a (clojure.set/intersection b)
+        empty? not)))
 
+(comment
+  (some-in? #{1} #{3 1})
+  (some-in? 10 #{2 1})
+  )
 (defn remove-nils
   [m]
   (let [f (fn [[k v]] (when v [k v]))]
