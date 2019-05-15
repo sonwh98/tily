@@ -36,17 +36,18 @@
 
 #?(:cljs
    (defn to-seq
-     "convert a js collection into a ISeq. Credit to http://www.dotkam.com/2012/11/23/convert-html5-filelist-to-clojure-vector/"
+     "convert a js collection into a ISeq.
+  Credit to http://www.dotkam.com/2012/11/23/convert-html5-filelist-to-clojure-vector/"
      [js-col]
      (-> (clj->js [])
          (.-slice)
          (.call js-col)
          (js->clj))))
 
-
 #?(:cljs
    (defn debug
-     "println to javascript console. using boot.cljs causes println to send output to the repl and not to the js console"
+     "println to javascript console. using boot.cljs causes println to send output to the repl
+  and not to the js console"
      [& edn]
      (let [output (str edn)
            output-unwrapped (subs output 1 (-> output count dec))]
