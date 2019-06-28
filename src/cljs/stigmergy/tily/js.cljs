@@ -14,6 +14,16 @@
       (.call js-col)
       (js->clj)))
 
+(defn obj->clj [obj]
+  (if (goog.isObject obj)
+    (-> (fn [result key]
+          (let [v (goog.object/get obj key)]
+            (if (= "function" (goog/typeOf v))
+              result
+              (assoc result key (obj->clj v)))))
+        (reduce {} (.getKeys goog/object obj)))
+    obj))
+
 (defn str->array-buffer [a-str]
   (. (js/TextEncoder. "utf-8") encode a-str))
 
@@ -65,7 +75,9 @@
                   (a/put! c hash-str)))))
     c))
 
-(defn format [& args]
+(defn format
+  "works like C printf formatting"
+  [& args]
   (apply gstring/format args))
 
 (defn get-dimensions
