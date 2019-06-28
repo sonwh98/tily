@@ -47,10 +47,19 @@
     (-> a (clojure.set/intersection b)
         empty? not)))
 
-(defn remove-nils
-  [m]
+(defn remove-vec-nils [v]
+  (clojure.walk/prewalk (fn [a]                                                                                                                (if (vector? a)                                                                                                        (vec (remove nil? a))                                                                                                a))                                                                                                              v))
+
+(defn remove-map-nils [m]
   (let [f (fn [[k v]] (when v [k v]))]
-    (w/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+    (w/postwalk (fn [x] (if (map? x)
+                          (into {} (map f x))
+                          x))
+                m)))
+
+(defn remove-nils
+  [coll]
+  (-> coll remove-map-nils remove-vec-nils))
 
 (defn str->date [date-as-str]
   #?(:cljs (let [m (-> date-as-str (js/moment. "MM/DD/YYYY"))]
