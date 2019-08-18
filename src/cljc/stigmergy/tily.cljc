@@ -1,8 +1,11 @@
 (ns stigmergy.tily
+  #?(:cljs (:refer-clojure :exclude [format]))
   (:require [clojure.string :as s]
             [clojure.walk :as w]
             [clojure.set]
-            #?(:cljs [cljsjs.moment])))
+            #?(:cljs [cljsjs.moment])
+            #?(:cljs [goog.string :as gstring])
+            ))
 
 ;;miscellaneous utility functions
 
@@ -72,3 +75,5 @@
   (swap! an-atom update-in path (constantly val)))
 
 
+#?(:cljs
+   (defn format                                                                                                              [fmt & args]                                                                                                            (apply gstring/format fmt args)))
