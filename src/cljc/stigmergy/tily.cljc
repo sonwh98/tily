@@ -1,5 +1,5 @@
 (ns stigmergy.tily
-  #?(:cljs (:refer-clojure :exclude [format]))
+  (:refer-clojure :exclude [format])
   (:require [clojure.string :as s]
             [clojure.walk :as w]
             [clojure.set]
