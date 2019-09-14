@@ -75,11 +75,6 @@
                   (a/put! c hash-str)))))
     c))
 
-(defn format
-  "works like C printf formatting"
-  [& args]
-  (apply gstring/format args))
-
 (defn get-dimensions
   ([]
    {:width (. js/window -innerWidth)

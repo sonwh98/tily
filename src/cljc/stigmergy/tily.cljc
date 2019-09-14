@@ -74,20 +74,20 @@
 (defn set-atom! [an-atom path val]
   (swap! an-atom update-in path (constantly val)))
 
-
-#?(:cljs
-   (defn format [fmt & args]
+(defn format [fmt & args]
+  #?(:cljs
      (apply gstring/format fmt args)))
 
 (defn suck
   "like slurp but returns byte-array"
   [file-name]
-  (let [paths (clojure.string/split file-name #"/")
-        root-dir (let [fp (first paths)]
-                   (if (= "" fp)
-                     "/"
-                     fp))
-        path (java.nio.file.Paths/get root-dir (into-array (rest paths)))]
-    (try
-      (java.nio.file.Files/readAllBytes path)
-      (catch Exception ex nil))))
+  #?(:clj
+     (let [paths (clojure.string/split file-name #"/")
+           root-dir (let [fp (first paths)]
+                      (if (= "" fp)
+                        "/"
+                        fp))
+           path (java.nio.file.Paths/get root-dir (into-array (rest paths)))]
+       (try
+         (java.nio.file.Files/readAllBytes path)
+         (catch Exception ex nil)))))
