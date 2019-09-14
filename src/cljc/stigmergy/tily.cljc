@@ -91,3 +91,8 @@
        (try
          (java.nio.file.Files/readAllBytes path)
          (catch Exception ex nil)))))
+
+(defn take-between [i j coll]
+  (let [chunk (drop i coll)
+        num (- j i)]
+    (take num chunk)))
