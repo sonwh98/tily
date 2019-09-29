@@ -76,7 +76,9 @@
 
 (defn format [fmt & args]
   #?(:cljs
-     (apply gstring/format fmt args)))
+     (apply gstring/format fmt args))
+  #?(:clj
+     (apply clojure.core/format fmt args)))
 
 (defn suck
   "like slurp but returns byte-array"
@@ -96,3 +98,16 @@
   (let [chunk (drop i coll)
         num (- j i)]
     (take num chunk)))
+
+(defn index-of
+  "find index of a value v in a-seq starting from s"
+  ([a-seq v s]
+   (let [found (filter (fn [[index value]]
+                         (and (>= index s)
+                              (= value v)))
+                       (with-index a-seq))
+         found-index (ffirst found)]
+     found-index))
+  ([a-seq v]
+   "find index of a value v in a-seq starting from 0"
+   (index-of a-seq v 0)))
